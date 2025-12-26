@@ -14,8 +14,12 @@ bool TC_NICrypto::Run()
 	// 512 digest
 	string answer = "515FB8387762EF74E4F137242763E8F97B3ED7AABA3F9D9000F02440B8255EC09762B66D9FEFABECB6EEFC1BA44883F2453EE9AAE319A38B189F1F3E4AB05CF8";
 
-	string output;
-	HashTest_SingleBlock(msg, output);
+	string output1;
+	HashTest_SingleBlock(msg, output1);
+
+
+	string output2;
+	HashTest_MultiBlock(msg, output2);
 
 	NICryptoFinalize();
 
@@ -37,11 +41,32 @@ void TC_NICrypto::HashTest_SingleBlock(const string & input, string & output)
 
 	char hexstr[64 * 2 + 1] = { 0 };
 	ByteArrayToHexString(digest, 64, hexstr, sizeof(hexstr));
+
+	output.assign(hexstr, hexstr + sizeof(hexstr));
 }
 
 void TC_NICrypto::HashTest_MultiBlock(const string & input, string & output)
 {
+	HASH_CONTEXT ctx;
+	NICryptoHashInit(&ctx, _SHA512);
 
+	uint8_t digest[64] = { 0 };
+	uint32_t returnLen = 0;
+
+	uint8_t msg[SHA_MAX_LM_BYTE_LEN];
+	HexStringToByteArray(input.data(), input.size(), msg, sizeof(msg));
+
+	auto t = input.size() / 2;
+
+	// 227
+	NICryptoHash(&ctx, msg, 99, nullptr, 0, nullptr);
+	NICryptoHash(&ctx, msg, 128, nullptr, 0, nullptr);
+	NICryptoHash(&ctx, nullptr, 0, digest, 64, &returnLen);
+
+	char hexstr[64 * 2 + 1] = { 0 };
+	ByteArrayToHexString(digest, 64, hexstr, sizeof(hexstr));
+
+	output.assign(hexstr, hexstr + sizeof(hexstr));
 }
 
 void TC_NICrypto::HexStringToByteArray(const char * hexstr, const size_t hexstr_len, uint8_t * byte_buf, const size_t byte_buf_len)
