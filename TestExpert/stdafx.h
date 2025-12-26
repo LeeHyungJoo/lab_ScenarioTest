@@ -1,6 +1,9 @@
 #pragma once
 
 #define _AFXDLL
+#include <io.h>
+#include <iostream>
+
 using namespace std;
 
 #define BUFFER_SIZE 1024

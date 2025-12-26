@@ -1,8 +1,6 @@
 ﻿
 #include "stdafx.h"
 #include <afx.h>
-#include <io.h>
-#include <iostream>
 #include <thread>
 #include <chrono>
 #include <tchar.h>
